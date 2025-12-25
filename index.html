@@ -45,6 +45,14 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Smooth image transitions */
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -199,7 +207,6 @@
                 </div>
                 <div>
                     <label class="text-[10px] font-black uppercase text-stone-400 ml-2 tracking-widest">Phone Number</label>
-                    <!-- Swedish Phone Validation: Optional +46 or 0, followed by digits, total 8-12 digits -->
                     <input type="tel" required id="ship-phone" pattern="^(\+46|0)[\d\s\-]{7,12}$" title="Please enter a valid Swedish phone number (e.g., 07x xxx xx xx)" class="w-full mt-1 bg-stone-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-orange-200 outline-none" placeholder="07x xxx xx xx">
                 </div>
                 <div>
@@ -244,17 +251,19 @@
     </div>
 
     <script>
+        // Updated products with image path references
+        // PATH: ./images/product-{id}.jpg
         const products = [
-            { id: 1, name: "Biscoff Cookies", price: 35, description: "Spiced Lotus Biscoff goodness in every bite.", emoji: "🍪", color: "bg-amber-100" },
-            { id: 2, name: "Choco Chip Cookies", price: 25, description: "The timeless classic with rich Belgian chocolate chips.", emoji: "🍪", color: "bg-orange-50" },
-            { id: 3, name: "Pistachio Cream Cookies", price: 40, description: "Filled with smooth pistachio cream and premium nuts.", emoji: "🟢", color: "bg-emerald-50" },
-            { id: 4, name: "Raspberry White Choco", price: 38, description: "Tart raspberries paired with creamy white chocolate.", emoji: "🍓", color: "bg-rose-50" },
-            { id: 5, name: "Kunafa Jar Cake", price: 55, description: "A fusion delight: layers of cake and traditional Kunafa.", emoji: "🏺", color: "bg-yellow-50" },
-            { id: 6, name: "Kunafa Jarcake", price: 55, description: "Sweet, crunchy, and creamy layers in a convenient jar.", emoji: "🏺", color: "bg-yellow-100" },
-            { id: 7, name: "Rum Cake", price: 65, description: "Moist, rich, and perfectly flavored for a sophisticated treat.", emoji: "🍰", color: "bg-orange-100" },
-            { id: 8, name: "Saffron Tiramisu", price: 70, description: "A royal twist on the classic with premium saffron notes.", emoji: "🍮", color: "bg-yellow-200" },
-            { id: 9, name: "Strawberry Jarcake", price: 50, description: "Fresh strawberry layers and light whipped cream.", emoji: "🍰", color: "bg-pink-50" },
-            { id: 10, name: "Choco Lava Cake", price: 45, description: "Warm, gooey chocolate center that melts in your mouth.", emoji: "🌋", color: "bg-stone-200" }
+            { id: 1, name: "Biscoff Cookies", price: 35, description: "Spiced Lotus Biscoff goodness in every bite.", emoji: "🍪", color: "bg-amber-100", image: "./images/product-1.jpg" },
+            { id: 2, name: "Choco Chip Cookies", price: 25, description: "The timeless classic with rich Belgian chocolate chips.", emoji: "🍪", color: "bg-orange-50", image: "./images/product-2.jpg" },
+            { id: 3, name: "Pistachio Cream Cookies", price: 40, description: "Filled with smooth pistachio cream and premium nuts.", emoji: "🟢", color: "bg-emerald-50", image: "./images/product-3.jpg" },
+            { id: 4, name: "Raspberry White Choco", price: 38, description: "Tart raspberries paired with creamy white chocolate.", emoji: "🍓", color: "bg-rose-50", image: "./images/product-4.jpg" },
+            { id: 5, name: "Kunafa Jar Cake", price: 55, description: "A fusion delight: layers of cake and traditional Kunafa.", emoji: "🏺", color: "bg-yellow-50", image: "./images/product-5.jpg" },
+            { id: 6, name: "Kunafa Jarcake", price: 55, description: "Sweet, crunchy, and creamy layers in a convenient jar.", emoji: "🏺", color: "bg-yellow-100", image: "./images/product-6.jpg" },
+            { id: 7, name: "Rum Cake", price: 65, description: "Moist, rich, and perfectly flavored for a sophisticated treat.", emoji: "🍰", color: "bg-orange-100", image: "./images/product-7.jpg" },
+            { id: 8, name: "Saffron Tiramisu", price: 70, description: "A royal twist on the classic with premium saffron notes.", emoji: "🍮", color: "bg-yellow-200", image: "./images/product-8.jpg" },
+            { id: 9, name: "Strawberry Jarcake", price: 50, description: "Fresh strawberry layers and light whipped cream.", emoji: "🍰", color: "bg-pink-50", image: "./images/product-9.jpg" },
+            { id: 10, name: "Choco Lava Cake", price: 45, description: "Warm, gooey chocolate center that melts in your mouth.", emoji: "🌋", color: "bg-stone-200", image: "./images/product-10.jpg" }
         ];
 
         let cart = [];
@@ -264,6 +273,9 @@
             grid.innerHTML = products.map(p => `
                 <div class="cookie-card bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 p-2">
                     <div class="${p.color} aspect-square rounded-[2rem] flex items-center justify-center text-7xl mb-4 relative overflow-hidden">
+                        <!-- Image Container: Loads image or falls back to emoji -->
+                        <img src="${p.image}" alt="${p.name}" class="product-image absolute inset-0 z-20 opacity-0" onload="this.classList.remove('opacity-0')" onerror="this.style.display='none'">
+                        
                         <span class="z-10">${p.emoji}</span>
                         <div class="absolute inset-0 opacity-10 flex items-center justify-center rotate-12 scale-150">
                              <i data-lucide="cookie" class="w-40 h-40"></i>
@@ -310,7 +322,10 @@
             } else {
                 container.innerHTML = cart.map(item => `
                     <div class="flex items-center gap-4 bg-stone-50 p-4 rounded-2xl border border-stone-100">
-                        <div class="w-12 h-12 ${item.color} rounded-xl flex items-center justify-center text-xl">${item.emoji}</div>
+                        <div class="w-12 h-12 ${item.color} rounded-xl flex items-center justify-center text-xl relative overflow-hidden">
+                            <img src="${item.image}" alt="" class="absolute inset-0 w-full h-full object-cover z-10" onerror="this.style.display='none'">
+                            ${item.emoji}
+                        </div>
                         <div class="flex-1">
                             <h5 class="font-bold text-sm">${item.name}</h5>
                             <p class="text-xs text-stone-400">${item.price} SEK x ${item.quantity}</p>
@@ -374,6 +389,8 @@
             const name = document.getElementById('fb-name').value;
             const msg = document.getElementById('fb-message').value;
             if(!name || !msg) return;
+            // Note: alert() used here as per original code logic for simplicity, 
+            // though custom modall would be more professional if preferred.
             alert("Thank you " + name + "! We have received your feedback.");
             document.getElementById('fb-name').value = '';
             document.getElementById('fb-message').value = '';
