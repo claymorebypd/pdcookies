@@ -46,12 +46,18 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Smooth image transitions */
         .product-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
+        }
+        
+        .baker-image-container {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            border-radius: 2rem;
         }
     </style>
 </head>
@@ -102,9 +108,25 @@
 
         <!-- About Section -->
         <section id="about" class="mt-24 bg-white rounded-[3rem] p-8 md:p-16 border border-orange-100 flex flex-col md:flex-row items-center gap-12">
-            <div class="w-full md:w-1/3 aspect-square bg-orange-50 rounded-[2.5rem] flex items-center justify-center relative overflow-hidden">
-                <i data-lucide="user" class="w-32 h-32 text-orange-200"></i>
+            <div class="w-full md:w-2/5 relative">
+                <!-- Baker Image Placeholder -->
+                <div class="bg-orange-50 rounded-[2.5rem] overflow-hidden border border-orange-100 relative group aspect-[4/5] flex items-center justify-center">
+                    <img 
+                        src="images/baker.jpg" 
+                        alt="The Baker" 
+                        class="absolute inset-0 w-full h-full object-cover z-20 opacity-0 transition-opacity duration-500" 
+                        onload="this.classList.remove('opacity-0'); this.nextElementSibling.style.display='none'"
+                    >
+                    <div class="z-10 text-center px-6">
+                        <i data-lucide="user" class="w-20 h-20 text-orange-200 mx-auto mb-4"></i>
+                        <p class="text-orange-300 text-xs font-bold uppercase tracking-widest">Baker Image Placeholder</p>
+                    </div>
+                </div>
+                <!-- Decorative Elements -->
+                <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-orange-200 rounded-full blur-3xl opacity-50 -z-10"></div>
+                <div class="absolute -top-6 -left-6 w-32 h-32 bg-orange-100 rounded-full blur-3xl opacity-40 -z-10"></div>
             </div>
+            
             <div class="flex-1 text-left">
                 <h3 class="text-3xl font-bold mb-6">The Baker's Story</h3>
                 <p class="text-stone-500 leading-relaxed mb-4 text-lg">
@@ -114,8 +136,12 @@
                     Every cookie and cake is handmade with love using high-quality Swedish ingredients. For me, baking isn't just a business—it's about sharing a little piece of joy with my community in Sweden.
                 </p>
                 <div class="mt-8 flex gap-4 flex-wrap">
-                    <div class="bg-orange-100 text-orange-700 px-4 py-2 rounded-xl text-sm font-bold">Homemade</div>
-                    <div class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold">Swedish Ingredients</div>
+                    <div class="bg-orange-100 text-orange-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                        <i data-lucide="heart" class="w-4 h-4"></i> Homemade
+                    </div>
+                    <div class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i> Swedish Ingredients
+                    </div>
                 </div>
             </div>
         </section>
@@ -127,6 +153,9 @@
             
             <div class="bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm">
                 <div class="flex flex-col gap-4 text-left">
+                    <div id="feedback-success" class="hidden bg-green-50 text-green-700 p-4 rounded-xl mb-4 text-sm font-bold flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> Thank you! Message sent.
+                    </div>
                     <div>
                         <label class="text-xs font-bold uppercase tracking-widest text-stone-400 ml-2">Name</label>
                         <input type="text" id="fb-name" class="w-full mt-1 bg-stone-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-orange-200 outline-none" placeholder="Your Name">
@@ -168,7 +197,7 @@
             </div>
             
             <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
-                <!-- Cart items injected here -->
+                <!-- Cart items -->
             </div>
 
             <div class="p-6 border-t bg-stone-50">
@@ -176,7 +205,7 @@
                     <span>Total</span>
                     <span id="cart-total">0 SEK</span>
                 </div>
-                <button onclick="showShippingForm()" id="checkout-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:shadow-none" disabled>
+                <button onclick="showShippingForm()" id="checkout-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-200 disabled:opacity-50" disabled>
                     Enter Shipping Details
                 </button>
                 <p class="text-[10px] text-center mt-4 text-stone-400 uppercase tracking-widest font-bold">Free delivery in Stockholm area</p>
@@ -188,14 +217,10 @@
     <div id="shipping-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-md" onclick="closeShipping()"></div>
         <div class="relative bg-white p-8 rounded-[2.5rem] max-w-md w-full max-h-[90vh] overflow-y-auto no-scrollbar">
-            <!-- Close Button Top Right -->
-            <button onclick="closeShipping()" class="absolute top-6 right-6 p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded-full transition-colors">
+            <button onclick="closeShipping()" class="absolute top-6 right-6 p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded-full">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-
             <h3 class="text-2xl font-bold mb-4 text-center">Shipping Information</h3>
-            <p class="text-stone-500 text-center mb-6 text-sm">Please tell us where to send your treats!</p>
-            
             <form id="shipping-form" class="space-y-4" onsubmit="handleShippingSubmit(event)">
                 <div>
                     <label class="text-[10px] font-black uppercase text-stone-400 ml-2 tracking-widest">Full Name</label>
@@ -207,13 +232,13 @@
                 </div>
                 <div>
                     <label class="text-[10px] font-black uppercase text-stone-400 ml-2 tracking-widest">Phone Number</label>
-                    <input type="tel" required id="ship-phone" pattern="^(\+46|0)[\d\s\-]{7,12}$" title="Please enter a valid Swedish phone number (e.g., 07x xxx xx xx)" class="w-full mt-1 bg-stone-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-orange-200 outline-none" placeholder="07x xxx xx xx">
+                    <input type="tel" required id="ship-phone" class="w-full mt-1 bg-stone-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-orange-200 outline-none" placeholder="07x xxx xx xx">
                 </div>
                 <div>
                     <label class="text-[10px] font-black uppercase text-stone-400 ml-2 tracking-widest">Delivery Address</label>
                     <textarea required minlength="10" id="ship-address" class="w-full mt-1 bg-stone-100 border-none rounded-xl p-3 focus:ring-2 focus:ring-orange-200 outline-none h-24" placeholder="Street, Zip, City"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-orange-600 text-white font-bold py-4 rounded-2xl hover:bg-orange-700 transition-colors mt-2 shadow-lg shadow-orange-100">
+                <button type="submit" class="w-full bg-orange-600 text-white font-bold py-4 rounded-2xl hover:bg-orange-700 transition-colors mt-2">
                     Confirm Order
                 </button>
             </form>
@@ -229,41 +254,27 @@
             </div>
             <h3 class="text-2xl font-bold mb-2">Order Confirmed!</h3>
             <p class="text-stone-500 mb-6 italic text-sm">Order Reference: <span id="ref-number" class="font-black text-stone-900 not-italic">#PD-0000</span></p>
-            
             <div class="bg-orange-50 p-6 rounded-2xl mb-8 text-left border border-orange-100">
                 <h4 class="text-xs font-black uppercase text-orange-700 mb-4 tracking-wider">Payment Instructions</h4>
-                <div class="flex items-start gap-3 mb-3">
-                    <div class="bg-orange-200 text-orange-700 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5">1</div>
-                    <p class="text-sm text-stone-600 leading-tight">Open your <b>Swish</b> app</p>
-                </div>
-                <div class="flex items-start gap-3 mb-3">
-                    <div class="bg-orange-200 text-orange-700 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5">2</div>
-                    <p class="text-sm text-stone-600 leading-tight">Swish total to: <b>076 434 9138</b></p>
-                </div>
-                <div class="flex items-start gap-3">
-                    <div class="bg-orange-200 text-orange-700 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5">3</div>
-                    <p class="text-sm text-stone-600 leading-tight">Enter Reference <b id="ref-reminder">#PD-0000</b> as message</p>
-                </div>
+                <p class="text-sm text-stone-600 mb-2">Swish total to: <b>076 434 9138</b></p>
+                <p class="text-sm text-stone-600">Enter Reference <b id="ref-reminder">#PD-0000</b></p>
             </div>
-
             <button onclick="closeSuccess()" class="w-full bg-stone-900 text-white font-bold py-4 rounded-2xl">I have Swished!</button>
         </div>
     </div>
 
     <script>
-        // Updated products with image path references
-        // PATH: ./images/product-{id}.jpg
         const products = [
-            { id: 1, name: "Biscoff Cookies", price: 35, description: "Spiced Lotus Biscoff goodness in every bite.", emoji: "🍪", color: "bg-amber-100", image: "./images/product-1.jpg" },
-            { id: 2, name: "Choco Chip Cookies", price: 25, description: "The timeless classic with rich Belgian chocolate chips.", emoji: "🍪", color: "bg-orange-50", image: "./images/product-2.jpg" },
-            { id: 3, name: "Pistachio Cream Cookies", price: 40, description: "Filled with smooth pistachio cream and premium nuts.", emoji: "🟢", color: "bg-emerald-50", image: "./images/product-3.jpg" },
-            { id: 4, name: "Raspberry White Choco", price: 38, description: "Tart raspberries paired with creamy white chocolate.", emoji: "🍓", color: "bg-rose-50", image: "./images/product-4.jpg" },
-            { id: 5, name: "Kunafa Jar Cake", price: 55, description: "A fusion delight: layers of cake and traditional Kunafa.", emoji: "🏺", color: "bg-yellow-50", image: "./images/product-5.jpg" },
-            { id: 6, name: "Kunafa Jarcake", price: 55, description: "Sweet, crunchy, and creamy layers in a convenient jar.", emoji: "🏺", color: "bg-yellow-100", image: "./images/product-6.jpg" },
-            { id: 7, name: "Rum Cake", price: 65, description: "Moist, rich, and perfectly flavored for a sophisticated treat.", emoji: "🍰", color: "bg-orange-100", image: "./images/product-7.jpg" },
-            { id: 8, name: "Saffron Tiramisu", price: 70, description: "A royal twist on the classic with premium saffron notes.", emoji: "🍮", color: "bg-yellow-200", image: "./images/product-8.jpg" },
-            { id: 9, name: "Strawberry Jarcake", price: 50, description: "Fresh strawberry layers and light whipped cream.", emoji: "🍰", color: "bg-pink-50", image: "./images/product-9.jpg" },
-            { id: 10, name: "Choco Lava Cake", price: 45, description: "Warm, gooey chocolate center that melts in your mouth.", emoji: "🌋", color: "bg-stone-200", image: "./images/product-10.jpg" }
+            { id: 1, name: "Biscoff Cookies", price: 35, description: "Spiced Lotus Biscoff goodness in every bite.", emoji: "🍪", color: "bg-amber-100", imageSrc: "images/product-1.jpg" },
+            { id: 2, name: "Choco Chip Cookies", price: 25, description: "The timeless classic with rich Belgian chocolate chips.", emoji: "🍪", color: "bg-orange-50", imageSrc: "images/product-2.jpg" },
+            { id: 3, name: "Pistachio Cream Cookies", price: 40, description: "Filled with smooth pistachio cream and premium nuts.", emoji: "🟢", color: "bg-emerald-50", imageSrc: "images/product-3.jpg" },
+            { id: 4, name: "Raspberry White Choco", price: 38, description: "Tart raspberries paired with creamy white chocolate.", emoji: "🍓", color: "bg-rose-50", imageSrc: "images/product-4.jpg" },
+            { id: 5, name: "Kunafa Jar Cake", price: 55, description: "A fusion delight: layers of cake and traditional Kunafa.", emoji: "🏺", color: "bg-yellow-50", imageSrc: "images/product-5.jpg" },
+            { id: 6, name: "Kunafa Jarcake", price: 55, description: "Sweet, crunchy, and creamy layers in a convenient jar.", emoji: "🏺", color: "bg-yellow-100", imageSrc: "images/product-6.jpg" },
+            { id: 7, name: "Rum Cake", price: 65, description: "Moist, rich, and perfectly flavored for a sophisticated treat.", emoji: "🍰", color: "bg-orange-100", imageSrc: "images/product-7.jpg" },
+            { id: 8, name: "Saffron Tiramisu", price: 70, description: "A royal twist on the classic with premium saffron notes.", emoji: "🍮", color: "bg-yellow-200", imageSrc: "images/product-8.jpg" },
+            { id: 9, name: "Strawberry Jarcake", price: 50, description: "Fresh strawberry layers and light whipped cream.", emoji: "🍰", color: "bg-pink-50", imageSrc: "images/product-9.jpg" },
+            { id: 10, name: "Choco Lava Cake", price: 45, description: "Warm, gooey chocolate center that melts in your mouth.", emoji: "🌋", color: "bg-stone-200", imageSrc: "images/product-10.jpg" }
         ];
 
         let cart = [];
@@ -273,11 +284,15 @@
             grid.innerHTML = products.map(p => `
                 <div class="cookie-card bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 p-2">
                     <div class="${p.color} aspect-square rounded-[2rem] flex items-center justify-center text-7xl mb-4 relative overflow-hidden">
-                        <!-- Image Container: Loads image or falls back to emoji -->
-                        <img src="${p.image}" alt="${p.name}" class="product-image absolute inset-0 z-20 opacity-0" onload="this.classList.remove('opacity-0')" onerror="this.style.display='none'">
-                        
-                        <span class="z-10">${p.emoji}</span>
-                        <div class="absolute inset-0 opacity-10 flex items-center justify-center rotate-12 scale-150">
+                        <img 
+                            src="${p.imageSrc}" 
+                            alt="${p.name}" 
+                            class="product-image absolute inset-0 z-20 opacity-0" 
+                            onload="this.classList.remove('opacity-0')" 
+                            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('opacity-10')"
+                        >
+                        <span class="z-10 transition-opacity duration-300">${p.emoji}</span>
+                        <div class="absolute inset-0 opacity-10 flex items-center justify-center rotate-12 scale-150 transition-opacity">
                              <i data-lucide="cookie" class="w-40 h-40"></i>
                         </div>
                     </div>
@@ -286,7 +301,7 @@
                             <h4 class="font-bold text-lg">${p.name}</h4>
                             <span class="font-black text-orange-600 text-sm whitespace-nowrap ml-2">${p.price} SEK</span>
                         </div>
-                        <p class="text-stone-400 text-sm mb-6 leading-relaxed">${p.description}</p>
+                        <p class="text-stone-400 text-sm mb-6 leading-relaxed h-10 overflow-hidden">${p.description}</p>
                         <button onclick="addToCart(${p.id})" class="w-full bg-stone-900 text-white font-bold py-3 rounded-2xl hover:bg-stone-800 transition-colors flex items-center justify-center gap-2">
                             <i data-lucide="plus" class="w-4 h-4"></i> Add to Basket
                         </button>
@@ -315,7 +330,7 @@
             const checkoutBtn = document.getElementById('checkout-btn');
             
             if (cart.length === 0) {
-                container.innerHTML = `<div class="text-center py-20"><i data-lucide="shopping-cart" class="w-12 h-12 mx-auto text-stone-200 mb-4"></i><p class="text-stone-400">Your basket is empty...</p></div>`;
+                container.innerHTML = `<div class="text-center py-20 text-stone-200"><i data-lucide="shopping-cart" class="w-12 h-12 mx-auto mb-4"></i><p class="text-stone-400">Empty...</p></div>`;
                 countBadge.classList.add('hidden');
                 checkoutBtn.disabled = true;
                 totalDisplay.innerText = '0 SEK';
@@ -323,7 +338,7 @@
                 container.innerHTML = cart.map(item => `
                     <div class="flex items-center gap-4 bg-stone-50 p-4 rounded-2xl border border-stone-100">
                         <div class="w-12 h-12 ${item.color} rounded-xl flex items-center justify-center text-xl relative overflow-hidden">
-                            <img src="${item.image}" alt="" class="absolute inset-0 w-full h-full object-cover z-10" onerror="this.style.display='none'">
+                            <img src="${item.imageSrc}" alt="" class="absolute inset-0 w-full h-full object-cover z-10" onerror="this.style.display='none'">
                             ${item.emoji}
                         </div>
                         <div class="flex-1">
@@ -356,25 +371,16 @@
         }
 
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('hidden'); }
-
-        function showShippingForm() {
-            document.getElementById('shipping-modal').classList.remove('hidden');
-        }
-
-        function closeShipping() {
-            document.getElementById('shipping-modal').classList.add('hidden');
-        }
+        function showShippingForm() { document.getElementById('shipping-modal').classList.remove('hidden'); }
+        function closeShipping() { document.getElementById('shipping-modal').classList.add('hidden'); }
 
         function handleShippingSubmit(event) {
             event.preventDefault();
             const ref = "PD-" + Math.floor(1000 + Math.random() * 9000);
-            
             closeShipping();
             document.getElementById('ref-number').innerText = "#" + ref;
             document.getElementById('ref-reminder').innerText = "#" + ref;
             document.getElementById('success-modal').classList.remove('hidden');
-            
-            // Clear cart
             cart = [];
             updateCartUI();
         }
@@ -389,11 +395,14 @@
             const name = document.getElementById('fb-name').value;
             const msg = document.getElementById('fb-message').value;
             if(!name || !msg) return;
-            // Note: alert() used here as per original code logic for simplicity, 
-            // though custom modall would be more professional if preferred.
-            alert("Thank you " + name + "! We have received your feedback.");
+            
+            const successMsg = document.getElementById('feedback-success');
+            successMsg.classList.remove('hidden');
+            
             document.getElementById('fb-name').value = '';
             document.getElementById('fb-message').value = '';
+            
+            setTimeout(() => successMsg.classList.add('hidden'), 5000);
         }
 
         window.onload = init;
